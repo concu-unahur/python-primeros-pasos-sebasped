@@ -13,7 +13,7 @@ def sumarUno():
     global cant
     global lock
     # time.sleep(1) #simula un proceso
-    lock.acquire()
+
     try:
         cant += 1
     finally:
@@ -29,16 +29,22 @@ def multPorDos():
     finally:
         lock.release()
     
+lock.acquire()
 
 t1 = threading.Thread(target=sumarUno)
 t2 = threading.Thread(target=multPorDos)
 
-t1.start()
+# ya no importa el orden en que lance los threads.
+# con el lock() me aseguro el orden: primero +1 y luego por 2.
+t2.start()
 # t1.join() # ya no necesito los joins porque lo manejo por el lock.
 # antes, sin el lock, la sincronización para que cant siempre termine en 4 
 # la manejaba el main thread mendiante joins.
-t2.start()
+t1.start()
 # t2.join()
 
 
 # y acá sigue haciendo cosas el main thread
+time.sleep(0.5)
+
+logging.info(f'Cantidad vale {cant}')
